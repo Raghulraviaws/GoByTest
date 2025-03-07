@@ -37,12 +37,41 @@ func TestAdd(t *testing.T) {
 		key := "test existing"
 		value := "this is a test value"
 		dictionary := Dictionary{key: value}
-		err := dictionary.Add(key, value)
+		err := dictionary.Add(key, "new test")
 
-		assertError(t, err, nil)
+		assertError(t, err, ErrWordExists)
 		assertDefinition(t, dictionary, key, value)
 
 	})
+}
+
+func TestUpdate(t *testing.T) {
+	t.Run("Existing word", func(t *testing.T) {
+		word := "test"
+		definition := "new definition"
+		dictionary := Dictionary{word: definition}
+		new_definition := "another new definition"
+		err := dictionary.Update(word, new_definition)
+
+		assertError(t, err, nil)
+		assertDefinition(t, dictionary, word, new_definition)
+
+	})
+
+	t.Run("New word", func(t *testing.T) {
+		dictionary := Dictionary{}
+		err := dictionary.Update("test", "test value")
+		assertError(t, err, ErrWordDoesNotExist)
+
+	})
+
+}
+
+func TestDelete(t *testing.T) {
+	word := "test"
+	dictionary := Dictionary{word: "test value"}
+	err := dictionary.Delete(word)
+	assertError(t, err, ErrWordDoesNotExist)
 }
 
 func assertString(t testing.TB, got, want string, dictionary map[string]string) {
